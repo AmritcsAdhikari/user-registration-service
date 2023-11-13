@@ -1,0 +1,39 @@
+---
+version: '3.7'
+services:
+  user-registration:
+    image: thestackschool/user-registration-service:1.0
+    container_name: user-registration-service
+    restart: always
+    # can use `docker-compose up --build ` to build the image named as line 5 and run the image
+    # if we use `docker-compose up`, then it will use the local image or pull from registry if not exists
+    build: .
+    ports:
+      - "9999:9999"
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: user_registration01
+      MYSQL_PORT: 3306
+      SERVER_PORT: 9999
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql:latest
+    container_name: mysql-db
+    restart: always
+    environment:
+      #This variable is optional and allows you to specify the name of a database to be created on image startup
+      MYSQL_DATABASE: user_registration01
+      #This variable is mandatory and specifies the password that will be set for the MySQL root superuser account.
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    expose:
+      - "3306"
+    volumes:
+      - db-data:/var/lib/mysql
+volumes:
+  db-data:
